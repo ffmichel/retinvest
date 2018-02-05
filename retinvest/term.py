@@ -13,25 +13,25 @@ def rsf_simple(growth_rate, inflation_rate, num_years):
 
 
 def inflation_factor(inflation_rate, num_years):
-    ''' Get the inflation factor for num_years from an average anual inflation rate. '''
+    ''' Get the inflation factor for num_years from an average annual inflation rate. '''
     return (inflation_rate + 1.0)**num_years
 
 
 def mixed_anual_returns(bonds_init_percentage, num_years, bond_aar, stock_aar):
-    ''' Create a list of mixed anual returns.
+    ''' Create a list of mixed annual returns.
 
-    Considers a protfolio with two types of equities, bonds and stocks.
+    Considers a portfolio with two types of equities, bonds and stocks.
     Considers that the percentage of stocks diminishes by one every year.
 
     Args:
         bonds_init_percentage: int, initial percentage of bonds in the portfolio.
         num_years: int, number of years we want to compute
-            our mixed anual returns for.
-        bond_aar: float, bonds average anual returns.
-        stock_aar: float, stocks average anual returns.
+            our mixed annual returns for.
+        bond_aar: float, bonds average annual returns.
+        stock_aar: float, stocks average annual returns.
 
     Returns:
-        list of float: average anual return of the portfolio per year.
+        list of float: average annual return of the portfolio per year.
     '''
     ret = []
     for year in range(num_years):
@@ -48,16 +48,16 @@ def rsf_returns(bonds_init_percentage, num_years, bond_aar,
                 stock_aar, inflation_rate):
     ''' Get the retirement saving factor for a bonds and stocks mixed portfolio.
 
-    Considers a protfolio with two types of equities, bonds and stocks.
+    Considers a portfolio with two types of equities, bonds and stocks.
     Considers that the percentage of stocks diminishes by one every year.
 
     Args:
         bonds_init_percentage: int, initial percentage of bonds in the portfolio.
         num_years: int, number of years we want to compute
             our mixed anual returns for.
-        bond_aar: float, bonds average anual returns.
-        stock_aar: float, stocks average anual returns.
-        inflation_rate: float, average anual inflation rate.
+        bond_aar: float, bonds average annual returns.
+        stock_aar: float, stocks average annual returns.
+        inflation_rate: float, average annual inflation rate.
 
     Returns:
         float

@@ -3,8 +3,9 @@
 * the number of years before retirement (for inflation purposes),
 * the yearly amount we want at retirement in current currency (inflation
   until year of retirement will be accounted for),
-* the average anual return of our investment.
-The calculations are done with a simplistic assumption of an average anual return.
+* the average annual return of our investment.
+The calculations are done with a simplistic assumption of
+an average annual return.
 '''
 import argparse
 
@@ -29,11 +30,12 @@ if __name__ == '__main__':
         num_years=args.num_retirement_years)
 
     msg = '''Amount needed to be saved for retirement with:
-    * average anual return of the investment: {p},
+    * average annual return of the investment: {p},
     * yearly inflation rate: {i},
     * {N} years of pension.
     * {n} years before pension.
-    * ${Y:,.2f} yearly salary in current currency (${inflated_Y:,.2f} at retirement time)
+    * ${Y:,.2f} yearly salary in current currency (${inflated_Y:,.2f} at
+      retirement time)
     ------------------
     ${A:,.2f}
     ------------------'''
