@@ -24,10 +24,12 @@ if __name__ == '__main__':
     inflated_yearly = args.yearly_salary * term.inflation_factor(
         args.inflation_rate, args.num_years_before)
 
-    res = args.yearly_salary * term.rsf_simple(
-        growth_rate=args.aar,
-        inflation_rate=args.inflation_rate,
-        num_years=args.num_retirement_years)
+    anual_returns = term.constant_returns(
+        average_anual_return=args.aar,
+        num_retirement_years=args.num_retirement_years)
+
+    res = args.yearly_salary * term.retirement_saving_factor(
+        anual_returns=anual_returns, inflation_rate=args.inflation_rate)
 
     msg = '''Amount needed to be saved for retirement with:
     * average annual return of the investment: {p},

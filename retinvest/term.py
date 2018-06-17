@@ -2,70 +2,59 @@
 import numpy as np
 
 
-def rsf_simple(growth_rate, inflation_rate, num_years):
-    '''Get retirement savings factor from growth and inflation.'''
-    growth = 1.0 + growth_rate
-    inflation = 1.0 + inflation_rate
-    pN = growth**num_years
-    inflated_growth = sum(
-        growth**(num_years - k) * inflation**k for k in range(num_years))
-    return float(inflated_growth) / pN
-
-
 def inflation_factor(inflation_rate, num_years):
-    ''' Get the inflation factor for num_years from an average annual inflation rate. '''
+    ''' Get the compund inflation factor after num_years. '''
     return (inflation_rate + 1.0)**num_years
 
 
-def mixed_anual_returns(bonds_init_percentage, num_years, bond_aar, stock_aar):
+def constant_returns(average_anual_return, num_retirement_years):
+    ''' Create a list of constant returns. '''
+    return [average_anual_return for _ in range(num_retirement_years)]
+
+
+def mixed_anual_returns(retirement_age, num_retirement_years,
+                        bond_portfolio_age, bond_aar, stock_aar):
     ''' Create a list of mixed annual returns.
 
     Considers a portfolio with two types of equities, bonds and stocks.
     Considers that the percentage of stocks diminishes by one every year.
 
     Args:
-        bonds_init_percentage: int, initial percentage of bonds in the portfolio.
-        num_years: int, number of years we want to compute
-            our mixed annual returns for.
+        retirement_age (int): Age considered for retirment.
+        num_retirement_years (int): Number of years for retirement.
+        bond_portfolio_age (int): Age at which the portfolio consists of only
+            bonds (e.g, 100, 110 or 120).
         bond_aar: float, bonds average annual returns.
         stock_aar: float, stocks average annual returns.
 
     Returns:
-        list of float: average annual return of the portfolio per year.
+        (list[float]): Average annual return of the portfolio per year.
     '''
-    ret = []
-    for year in range(num_years):
-        year_percentage = bonds_init_percentage + year
-        year_percentage = min(year_percentage, 100)
-        w1 = float(year_percentage) / 100
-        w2 = float(100 - year_percentage) / 100
-        ret.append(w1 * (1.0 + bond_aar) + w2 * (1.0 + stock_aar))
-
+    ret = [
+        float(max(bond_portfolio_age - year, 0)) / 100.0 * stock_aar +
+        float(min(bond_portfolio_age, year) / 100.0) * bond_aar
+        for year in range(retirement_age, retirement_age +
+                          num_retirement_years)
+    ]
     return ret
 
 
-def rsf_returns(bonds_init_percentage, num_years, bond_aar,
-                stock_aar, inflation_rate):
-    ''' Get the retirement saving factor for a bonds and stocks mixed portfolio.
-
-    Considers a portfolio with two types of equities, bonds and stocks.
-    Considers that the percentage of stocks diminishes by one every year.
+def retirement_saving_factor(anual_returns, inflation_rate):
+    ''' Get the retirement saving factor given a list of anual growth.
 
     Args:
-        bonds_init_percentage: int, initial percentage of bonds in the portfolio.
-        num_years: int, number of years we want to compute
-            our mixed anual returns for.
-        bond_aar: float, bonds average annual returns.
-        stock_aar: float, stocks average annual returns.
-        inflation_rate: float, average annual inflation rate.
+        anual_returns (list[float]): Expected anual return for each
+            retirement year.
+        inflation_rate (float): average annual inflation rate.
 
     Returns:
         float
     '''
-    yearly_growth = mixed_anual_returns(bonds_init_percentage, num_years,
-                                        bond_aar, stock_aar)
-    final_growth = np.prod(yearly_growth)
+    anual_growths = [1. + ret for ret in anual_returns]
+    final_return = np.prod(anual_growths)
+    num_retirement_years = len(anual_growths)
     inflation = inflation_rate + 1.0
-    inflated_growth = sum(
-        np.prod(yearly_growth[k:]) * inflation**k for k in range(num_years))
-    return float(inflated_growth) / final_growth
+    inflated_return = sum(
+        np.prod(anual_growths[k:]) * inflation**k
+        for k in range(num_retirement_years))
+    return float(inflated_return) / final_return

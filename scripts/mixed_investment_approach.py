@@ -14,39 +14,37 @@ import argparse
 
 from retinvest import term
 
-DEFAULT_BONDS_INITIAL_PERCENTAGE = 65
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-B', '--bonds_aar', type=float, required=True)
     parser.add_argument('-S', '--stocks_aar', type=float, required=True)
-    parser.add_argument(
-        '-b',
-        '--bonds_initial_percentage',
-        type=float,
-        required=False,
-        default=DEFAULT_BONDS_INITIAL_PERCENTAGE)
+    parser.add_argument('-a', '--retirement_age', type=int, required=True)
     parser.add_argument('-i', '--inflation_rate', type=float, required=True)
     parser.add_argument(
         '-N', '--num_retirement_years', type=int, required=True)
     parser.add_argument('-n', '--num_years_before', type=int, required=True)
     parser.add_argument('-Y', '--yearly_salary', type=float, required=True)
+    parser.add_argument(
+        '--bond_portfolio_age', type=float, required=False, default=100)
     args = parser.parse_args()
 
     inflated_yearly = args.yearly_salary * term.inflation_factor(
         args.inflation_rate, args.num_years_before)
 
-    res = inflated_yearly * term.rsf_returns(
-        bonds_init_percentage=args.bonds_initial_percentage,
-        num_years=args.num_retirement_years,
+    anual_returns = term.mixed_anual_returns(
+        retirement_age=args.retirement_age,
+        num_retirement_years=args.num_retirement_years,
+        bond_portfolio_age=args.bond_portfolio_age,
         bond_aar=args.bonds_aar,
-        stock_aar=args.stocks_aar,
-        inflation_rate=args.inflation_rate)
+        stock_aar=args.stocks_aar)
+    res = args.yearly_salary * term.retirement_saving_factor(
+        anual_returns=anual_returns, inflation_rate=args.inflation_rate)
 
     msg = '''Amount needed to be saved for retirement with:
     * bonds average anual return: {B},
     * stocks average anual return: {S},
-    * bonds initial percentage: {b}%,
+    * retirement age: {a},
+    * Age of full bond portfolio: {bpa},
     * yearly inflation rate: {i},
     * {N} years of pension.
     * {n} years before pension.
@@ -55,9 +53,10 @@ if __name__ == '__main__':
     ${A:,.2f}
     ------------------'''
     print msg.format(
-        B=args.bonds_aar,
-        S=args.stocks_aar,
-        b=args.bonds_initial_percentage,
+        B=args.bonds_aar * 100.,
+        S=args.stocks_aar * 100.,
+        a=args.retirement_age,
+        bpa=args.bond_portfolio_age,
         i=args.inflation_rate,
         N=args.num_retirement_years,
         n=args.num_years_before,
