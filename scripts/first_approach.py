@@ -28,7 +28,7 @@ if __name__ == '__main__':
         average_anual_return=args.aar,
         num_retirement_years=args.num_retirement_years)
 
-    res = args.yearly_salary * term.retirement_saving_factor(
+    res = inflated_yearly * term.retirement_saving_factor(
         anual_returns=anual_returns, inflation_rate=args.inflation_rate)
 
     msg = '''Amount needed to be saved for retirement with:
