@@ -34,14 +34,14 @@ if __name__ == '__main__':
     inflated_yearly = args.yearly_salary * term.inflation_factor(
         args.inflation_rate, args.num_years_before)
 
-    anual_returns = term.mixed_anual_returns(
-        retirement_age=args.retirement_age,
-        num_retirement_years=args.num_retirement_years,
+    annual_returns = term.mixed_annual_returns(
+        start=args.retirement_age,
+        length=args.num_retirement_years,
         bond_portfolio_age=args.bond_portfolio_age,
         bond_aar=args.bonds_aar,
         stock_aar=args.stocks_aar)
     res = inflated_yearly * term.retirement_saving_factor(
-        anual_returns=anual_returns, inflation_rate=args.inflation_rate)
+        annual_returns=annual_returns, inflation_rate=args.inflation_rate)
 
     msg = '''Amount needed to be saved for retirement with:
     * bonds average annual return: {B},

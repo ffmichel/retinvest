@@ -12,8 +12,8 @@ def constant_returns(average_anual_return, num_retirement_years):
     return [average_anual_return for _ in range(num_retirement_years)]
 
 
-def mixed_anual_returns(retirement_age, num_retirement_years,
-                        bond_portfolio_age, bond_aar, stock_aar):
+def mixed_annual_returns(start, length, bond_portfolio_age, bond_aar,
+                         stock_aar):
     ''' Create a list of mixed annual returns.
 
     Considers a portfolio with two types of equities, bonds and stocks.
@@ -30,16 +30,18 @@ def mixed_anual_returns(retirement_age, num_retirement_years,
     Returns:
         (list[float]): Average annual return of the portfolio per year.
     '''
-    ret = [
-        float(max(bond_portfolio_age - year, 0)) / 100.0 * stock_aar +
-        float(min(bond_portfolio_age, year) / 100.0) * bond_aar
-        for year in range(retirement_age, retirement_age +
-                          num_retirement_years)
+    duration = start + length
+    stock_percentages = [
+        float(max(bond_portfolio_age - year, 0)) / 100.0
+        for year in range(start, duration)
     ]
-    return ret
+    return [
+        stock_percentage * stock_aar + (1 - stock_percentage) * bond_aar
+        for stock_percentage in stock_percentages
+    ]
 
 
-def retirement_saving_factor(anual_returns, inflation_rate):
+def retirement_saving_factor(annual_returns, inflation_rate):
     ''' Get the retirement saving factor given a list of anual growth.
 
     Args:
@@ -50,11 +52,11 @@ def retirement_saving_factor(anual_returns, inflation_rate):
     Returns:
         float
     '''
-    anual_growths = [1. + ret for ret in anual_returns]
-    final_return = np.prod(anual_growths)
-    num_retirement_years = len(anual_growths)
+    annual_growths = [1. + ret for ret in annual_returns]
+    final_return = np.prod(annual_growths)
+    num_retirement_years = len(annual_growths)
     inflation = inflation_rate + 1.0
     inflated_return = sum(
-        np.prod(anual_growths[k:]) * inflation**k
+        np.prod(annual_growths[k:]) * inflation**k
         for k in range(num_retirement_years))
     return float(inflated_return) / final_return
